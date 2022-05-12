@@ -1,8 +1,13 @@
-from pyexpat import model
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from keras import layers
+from keras.optimizers import adam_v2
+#from keras import layers
+
+#imports para el agente
+from rl.agents import DQNAgent
+from rl.policy import BoltzmannGumbelQPolicy
+from rl.memory import SequentialMemory
 
 
 """Tamaño de la entrada:
@@ -22,10 +27,20 @@ número de acciones posibles:
 
 
 
+def build_agent (model, actions_dim):
+    policy = BoltzmannGumbelQPolicy()
+    
+    memory = SequentialMemory(limit=50000, window_length=1)
+    dqn = DQNAgent(policy, memory, model=build_model(actions_dim), nb_actions=actions_dim,
+                   nb_steps_warmup=10, target_model_update=1e-2)
+    return dqn
 
 
 
-def __init__(actions_dim):
+
+
+
+def build_model (actions_dim):
     
     #buscar como pasar de imagen de color a blanco y negro!
     inputImage = keras.Input(shape=(224, 320, 1))
@@ -37,13 +52,17 @@ def __init__(actions_dim):
     #el 8 es por las acciones posibles
     
     #capas de convolución
+    
     Conv = keras.layers.Conv2D(filters=32, kernel_size=(8, 8), strides=(4, 4), activation='relu') (inputImage)
     Conv = keras.layers.Conv2D(filters=64, kernel_size=(4, 4), strides=(2, 2), activation='relu') (Conv)
     Conv = keras.layers.Conv2D(filters=64, kernel_size=(3, 3), strides=(1, 1), activation='relu') (Conv)
+    Conv = keras.layers.Flatten()(Conv)
+    Conv = keras.layers.Dense(units=512, activation='relu')(Conv)
     #en estas capas, el modelo debería interpretar la imagen del entorno actual del agente
     
     #interpretación de entradas pasadas:
-    Combos = keras.layers.Dense()(inputPastInputs)
+    Flat = keras.layers.Flatten()(inputPastInputs)
+    Combos = keras.layers.Dense(units=80)(Flat)
     Combos = keras.layers.Dense(units=32, activation='relu')(Combos)
     Combos = keras.layers.Dense(32, activation='relu')(Combos)
     #en estas capas, el modelo debería interpretar las acciones que el agente ha hecho en el entorno anterior
@@ -60,7 +79,11 @@ def __init__(actions_dim):
     return model
     
     
-    self.model = keras.Model(inputs=[self.inputImage, self.inputPastInputs], outputs=self.Out)
-"""        
-Este modelo no es un agente. Si es una buena guia para la estructura del agente de todas formas.        
-"""
+if __name__ == "__main__":
+    keras.utils.plot_model(build_model(8),to_file='model.png', show_shapes=True)
+    dqn = build_agent(build_model(8), 8)
+    dqn.compile(adam_v2(lr=1e-3), metrics=['mae'])
+    
+
+
+
