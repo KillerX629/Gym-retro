@@ -31,7 +31,7 @@ def build_agent (model, actions_dim):
     policy = BoltzmannGumbelQPolicy()
     
     memory = SequentialMemory(limit=50000, window_length=1)
-    dqn = DQNAgent(policy, memory, model=build_model(actions_dim), nb_actions=actions_dim,
+    dqn = DQNAgent(policy=policy, memory=memory, model=model, nb_actions=actions_dim,
                    nb_steps_warmup=10, target_model_update=1e-2)
     return dqn
 
@@ -80,10 +80,11 @@ def build_model (actions_dim):
     
     
 if __name__ == "__main__":
-    keras.utils.plot_model(build_model(8),to_file='model.png', show_shapes=True)
+    #keras.utils.plot_model(build_model(8),to_file='model.png', show_shapes=True)
     dqn = build_agent(build_model(8), 8)
-    dqn.compile(adam_v2(lr=1e-3), metrics=['mae'])
+    dqn.compile(adam_v2.Adam(learning_rate=1e-2), metrics=['mae'])
+    
     
 
-
+#adam_v2 es un MODULO. El optimizador se accede mediante adam_v2.Adam
 
