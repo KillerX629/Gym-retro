@@ -3,8 +3,8 @@
 
 
 # To-Do:
-Crear capa convolucional que reciba un cuadro del emulador e intente predecir la mejor accion a tomar en el siguiente cuadro
+Lograr pasar las entradas pasadas del agente al agente.
 
-Crear una capa de neuronas recurrentes que pueda aprender distintos "Combos" dadas las entradas pasadas y la recompensa posterior
+Revisar la funcion de recompensa
 
-Crear una funcion de recompensa para que la red neuronal pueda aprender
+Entrenar el modelo
