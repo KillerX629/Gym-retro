@@ -1,5 +1,5 @@
 import retro
-
+from agent import *
 
 
 
@@ -19,33 +19,41 @@ número de acciones posibles:
 
 if __name__ == '__main__':
     env = retro.make(game="MortalKombat3-Genesis",
-                    state="Level1.ShangTsungVsLiuKang")
+                    state="Level1.ShangTsungVsLiuKang",
+                    scenario="scenario")
     obs = env.reset()
     height, width, channels = env.observation_space.shape
-    print("", height, "", width, "", channels)
+    #print("", height, "", width, "", channels)
     actions = env.action_space.n
+    agent = build_agent(build_model(actions),actions)
+    try:
+        agent.load_weights("mkiii.h5")
+    except:
+        FileNotFoundError("")
+    agent.compile(optimizer=adam_v2.Adam(lr=1e-3), metrics=['mae'])
     
-    #dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2)fit entrena el modelo
+    agent.fit(env=env, nb_steps=1000000, visualize=True, verbose=2)
 
-    while True:
-        print("", height, "", width, "", channels)
-        action = env.action_space.sample()
-        obs, rew, done, info = env.step(action)
-        env.render()
-        if done:
-            obs = env.reset()
-            env.close()
-
-
-
-
+"""
+while True:
+    action = env.action_space.sample()
+    obs, rew, done, info = env.step(action)
+    env.render()
+    if done:
+        obs = env.reset()
+        env.close()
+        agent.save_weights("mkiii.h5", overwrite=True)
+"""
 
 
 
 
 
 
-    """
+
+
+
+"""
     este código es una de las formas en las que podemos conseguir guardar
     los píxeles de la pantalla en variables.
     
@@ -58,7 +66,7 @@ if __name__ == '__main__':
     env.unwrapped.get_action_meanings()
     """
     
-    """
+"""
 while True:
     action = env.action_space.sample()
     obs, rew, done, info = env.step(action)
