@@ -43,7 +43,7 @@ def build_agent (model, actions_dim):
 def build_model (actions_dim):
     
     #buscar como pasar de imagen de color a blanco y negro!
-    inputImage = keras.Input(shape=(224, 320, 1))
+    inputImage = keras.Input(shape=(224, 320, 3))
     #las dimensiones de la entrada son entonces:
     # 224x320 y en vez de 3 canales (RGB), pasamos a blanco y negro
     
@@ -78,12 +78,12 @@ def build_model (actions_dim):
     #en esta capa, el modelo debería decidir qué acción tomar
     return model
     
-    
+    """"
 if __name__ == "__main__":
     #keras.utils.plot_model(build_model(8),to_file='model.png', show_shapes=True)
     dqn = build_agent(build_model(8), 8)
     dqn.compile(adam_v2.Adam(learning_rate=1e-2), metrics=['mae'])
-    
+    """
     
 
 #adam_v2 es un MODULO. El optimizador se accede mediante adam_v2.Adam
